@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EU CRA网络弹性法案分级评估工具 | TÜV Rheinland</title>
+
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tuvBlue: '#0071B9',
+                        tuvBlueLight: '#338DCD',
+                        techCyan: '#00C2FF',
+                        appleBg: '#F5F5F7',
+                        charcoal: '#1A1D20',
+                        muted: '#86868B'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                        serif: ['Cormorant Garamond', 'serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    },
+                    boxShadow: {
+                        'tech': '0 30px 60px -15px rgba(0, 113, 185, 0.12), 0 0 0 1px rgba(0, 113, 185, 0.05), inset 0 0 20px rgba(255, 255, 255, 0.8)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- GSAP 3 Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <style>
+        body,
+        html {
+            background-color: var(--appleBg);
+            color: var(--charcoal);
+            overflow: hidden;
+            height: 100vh;
+            height: 100dvh;
+            width: 100vw;
+            -webkit-font-smoothing: antialiased;
+            margin: 0;
+            padding: 0;
+        }
+
+        .tech-grid {
+            position: fixed;
+            inset: 0;
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(0, 113, 185, 0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 113, 185, 0.03) 1px, transparent 1px);
+            z-index: 0;
+            pointer-events: none;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+        }
+
+        .hero-mesh-bg {
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(at 20% 0%, rgba(0, 113, 185, 0.06) 0px, transparent 40%), radial-gradient(at 80% 100%, rgba(0, 194, 255, 0.08) 0px, transparent 40%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .custom-scrollbar {
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            display: none;
+            width: 0px;
+            background: transparent;
+        }
+
+        .instrument-panel {
+            position: relative;
+        }
+
+        .instrument-crosshairs,
+        .instrument-crosshairs-bottom {
+            position: absolute;
+            inset: 1rem;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        .instrument-crosshairs::before,
+        .instrument-crosshairs::after,
+        .instrument-crosshairs-bottom::before,
+        .instrument-crosshairs-bottom::after {
+            content: '+';
+            position: absolute;
+            font-family: 'JetBrains Mono';
+            color: #0071B9;
+            opacity: 0.3;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .instrument-crosshairs::before {
+            top: 0;
+            left: 0;
+        }
+
+        .instrument-crosshairs::after {
+            top: 0;
+            right: 0;
+        }
+
+        .instrument-crosshairs-bottom::before {
+            bottom: 0;
+            left: 0;
+        }
+
+        .instrument-crosshairs-bottom::after {
+            bottom: 0;
+            right: 0;
+        }
+
+        .spotlight-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 113, 185, 0.1);
+            border-radius: 1rem;
+            transition: all 0.2s ease-out;
+            overflow: hidden;
+        }
+
+        .spotlight-card .bracket {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: 'JetBrains Mono';
+            font-size: 1.2rem;
+            color: #0071B9;
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+
+        .spotlight-card .bracket.left {
+            left: 1rem;
+            transform: translate(-5px, -50%);
+        }
+
+        .spotlight-card .bracket.right {
+            right: 1rem;
+            transform: translate(5px, -50%);
+        }
+
+        @media (hover: hover) {
+            .spotlight-card:hover {
+                background: #ffffff;
+                border-color: rgba(0, 113, 185, 0.4);
+                box-shadow: 0 8px 20px -6px rgba(0, 113, 185, 0.25), 0 0 0 1px rgba(0, 113, 185, 0.4);
+                transform: translateY(-2px);
+                padding-left: 2rem !important;
+                padding-right: 2rem !important;
+                z-index: 10;
+            }
+
+            .spotlight-card:hover .bracket {
+                opacity: 1;
+                transform: translate(0, -50%);
+                font-weight: bold;
+            }
+        }
+
+        .spotlight-card.active-selected {
+            background: #ffffff;
+            border-color: rgba(0, 113, 185, 0.4);
+            box-shadow: 0 4px 15px -4px rgba(0, 113, 185, 0.3), inset 0 0 0 2px rgba(0, 113, 185, 0.2);
+            transform: translateY(-2px);
+            padding-left: 2rem !important;
+            padding-right: 2rem !important;
+            z-index: 10;
+        }
+
+        .spotlight-card.active-selected .bracket {
+            opacity: 1;
+            transform: translate(0, -50%);
+            font-weight: bold;
+        }
+
+        .progress-stripes {
+            background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+            background-size: 1rem 1rem;
+            animation: moveStripes 1s linear infinite;
+        }
+
+        @keyframes moveStripes {
+            0% {
+                background-position: 1rem 0;
+            }
+
+            100% {
+                background-position: 0 0;
+            }
+        }
+
+        .risk-italic {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-weight: 600;
+            color: #0071B9;
+            font-size: 1.15em;
+        }
+
+        .output-text {
+            white-space: pre-wrap;
+            line-height: 1.8;
+        }
+
+        .lang-switch button.active {
+            background: #0071B9;
+            color: white;
+            border-color: #0071B9;
+        }
+    </style>
+</head>
+
+<body class="flex flex-col">
+
+    <div class="tech-grid"></div>
+    <div class="hero-mesh-bg"></div>
+
+    <header
+        class="relative z-20 h-16 w-full flex items-center justify-between px-6 border-b border-tuvBlue/10 bg-white/40 backdrop-blur-md">
+        <div class="flex items-center gap-4 min-w-0">
+            <div class="relative w-4 h-4 flex items-center justify-center shrink-0">
+                <div class="absolute inset-0 border border-tuvBlue rounded-sm animate-[spin_4s_linear_infinite]"></div>
+                <div class="w-1.5 h-1.5 bg-tuvBlue rounded-[1px]"></div>
+            </div>
+            <div id="header-title"
+                class="font-display font-bold tracking-tight text-[13px] sm:text-base md:text-lg text-charcoal whitespace-nowrap overflow-hidden text-ellipsis max-w-[38vw] sm:max-w-none">
+                EU CRA网络弹性法案分级评估工具
+            </div>
+            <div id="header-subtitle"
+                class="hidden md:flex ml-4 pl-4 border-l border-tuvBlue/20 font-mono text-[10px] text-tuvBlue/80 flex-col leading-tight">
+                <span>EU CRA</span>
+                <span>Cyber Resilience Act Classification Tool</span>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+            <div class="lang-switch flex items-center rounded border border-tuvBlue/20 overflow-hidden bg-white/60">
+                <button id="lang-zh" onclick="setLanguage('zh')"
+                    class="px-3 py-1.5 text-[11px] font-mono tracking-widest text-tuvBlue border-r border-tuvBlue/20 active">中文</button>
+                <button id="lang-en" onclick="setLanguage('en')"
+                    class="px-3 py-1.5 text-[11px] font-mono tracking-widest text-tuvBlue">EN</button>
+            </div>
+            <button onclick="resetEngine()"
+                class="flex items-center gap-2 px-4 py-1.5 rounded bg-tuvBlue/5 font-mono text-[11px] tracking-widest uppercase border border-tuvBlue/20 text-tuvBlue hover:bg-tuvBlue hover:text-white transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                </svg>
+                <span id="header-reset-text">重新测试</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="relative z-10 flex-1 flex items-center justify-center p-4 md:p-8 overflow-hidden">
+
+        <div id="greeting-view"
+            class="instrument-panel w-full max-w-5xl h-full max-h-[85dvh] md:max-h-[90dvh] bg-white/80 backdrop-blur-3xl border border-white rounded-[1.5rem] md:rounded-[2rem] shadow-tech flex flex-col transition-all duration-300">
+            <div class="instrument-crosshairs"></div>
+            <div class="instrument-crosshairs-bottom"></div>
+            <div class="relative z-10 flex flex-col h-full items-center justify-center p-8 md:p-12 text-center">
+                <div class="flex-1 flex flex-col items-center justify-center w-full">
+                    <div class="mb-8 relative">
+                        <div class="absolute inset-0 bg-techCyan/10 blur-xl rounded-full"></div>
+                        <svg class="w-20 h-20 text-tuvBlue relative z-10 mx-auto" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="10" rx="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                    </div>
+                    <h1 id="welcome-title"
+                        class="font-display text-[18px] sm:text-[22px] md:text-5xl text-charcoal font-bold tracking-tight mb-4 md:mb-6 px-4 whitespace-nowrap overflow-hidden text-ellipsis max-w-full">
+                        EU CRA网络弹性法案分级评估工具
+                    </h1>
+                    <p id="welcome-desc"
+                        class="font-sans text-[14px] md:text-base text-charcoal/70 leading-relaxed max-w-2xl mb-6 md:mb-8 px-2 text-center">
+                        欢迎使用《欧盟网络弹性法案》(CRA) 产品分级评估工具。本框架将通过一系列预审问题，帮助您初步了解您的带数字元素的软硬件产品在CRA下的分类与合规要求。
+                    </p>
+                    <button onclick="startDiagnostic()"
+                        class="group relative px-8 py-4 bg-tuvBlue text-white font-mono font-bold tracking-widest text-sm uppercase rounded shadow-[0_4px_15px_rgba(0,113,185,0.3)] hover:bg-tuvBlueLight hover:-translate-y-1 transition-all overflow-hidden">
+                        <div
+                            class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                        </div>
+                        <div class="relative z-10 flex items-center gap-3"><span id="start-btn-text">开始测试</span><svg
+                                class="w-4 h-4 group-hover:translate-x-1 transition-transform"
+                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 12h14"></path>
+                                <path d="m12 5 7 7-7 7"></path>
+                            </svg></div>
+                    </button>
+                </div>
+                <div class="shrink-0 mt-8 text-center">
+                    <p id="disclaimer-top" class="font-mono text-[10px] text-charcoal/40 tracking-wide">
+                        此判定仅供参考，本问卷并未考虑产品其他可能令其改变分类的设计或技术细节。 如需更详细的分析，请向TUV莱茵查询。
+                    </p>
+                    <p class="mt-1 font-mono text-[10px] text-charcoal/40 tracking-wide">&copy; 2026 TÜV Rheinland.
+                        <span id="rights-top">All rights reserved.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="console-container"
+            class="instrument-panel w-full max-w-5xl h-full max-h-[85dvh] md:max-h-[90dvh] bg-white/80 backdrop-blur-3xl border border-white rounded-[1.5rem] md:rounded-[2rem] shadow-tech hidden flex flex-col transition-all duration-300">
+            <div class="instrument-crosshairs hidden md:block"></div>
+            <div class="instrument-crosshairs-bottom hidden md:block"></div>
+            <div class="relative z-10 flex flex-col h-full p-4 md:p-10">
+                <div
+                    class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 shrink-0 border-b border-tuvBlue/10 pb-6">
+                    <div class="flex items-center gap-4">
+                        <button id="btn-back" onclick="goBack()"
+                            class="flex items-center gap-2 px-3 py-1.5 rounded bg-tuvBlue/5 border border-tuvBlue/20 text-tuvBlue font-mono text-[11px] tracking-widest uppercase hover:bg-tuvBlue hover:text-white transition-all duration-300 disabled:opacity-30 disabled:pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m12 19-7-7 7-7" />
+                                <path d="M19 12H5" />
+                            </svg> <span id="back-btn-text">返回上一题</span>
+                        </button>
+                    </div>
+                    <div class="w-full md:w-1/3 h-1.5 bg-tuvBlue/10 rounded-full overflow-hidden">
+                        <div id="progress-bar"
+                            class="h-full bg-tuvBlue progress-stripes shadow-[0_0_8px_#00C2FF] transition-all duration-500"
+                            style="width: 10%;"></div>
+                    </div>
+                </div>
+                <div id="options-container"
+                    class="flex-1 flex flex-col gap-3 custom-scrollbar px-3 -mx-3 pt-2 relative z-20 pb-6 after:content-[''] after:block after:h-8 after:shrink-0">
+                    <div id="question-view" class="mb-4 md:mb-6 shrink-0 mt-2">
+                        <h2 id="question-text"
+                            class="font-display text-[17px] md:text-2xl text-charcoal font-semibold leading-relaxed tracking-tight">
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="result-view"
+            class="instrument-panel w-full max-w-5xl h-full max-h-[85dvh] md:max-h-[90dvh] bg-white/90 backdrop-blur-3xl rounded-[1.5rem] md:rounded-[2rem] border border-tuvBlue/10 shadow-tech hidden flex-col">
+            <div class="instrument-crosshairs hidden md:block"></div>
+            <div class="instrument-crosshairs-bottom hidden md:block"></div>
+
+            <div class="relative z-10 flex flex-col h-full p-4 md:p-8 overflow-hidden">
+                <div class="flex items-center gap-4 mb-2 shrink-0 border-b border-tuvBlue/10 pb-4">
+                    <button onclick="goBackFromResult()"
+                        class="flex items-center gap-2 px-3 py-1.5 rounded bg-tuvBlue/5 border border-tuvBlue/20 text-tuvBlue font-mono text-[11px] tracking-widest uppercase hover:bg-tuvBlue hover:text-white transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="m12 19-7-7 7-7" />
+                            <path d="M19 12H5" />
+                        </svg> <span id="result-back-btn-text">返回上一题</span>
+                    </button>
+                    <span id="result-badge"
+                        class="ml-auto font-mono text-[11px] text-tuvBlue font-bold bg-tuvBlue/5 px-3 py-1.5 rounded border border-tuvBlue/20 tracking-widest">[
+                        测试结果 ]</span>
+                </div>
+
+                <div
+                    class="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar pt-2 pb-4 flex flex-col px-1 after:content-[''] after:block after:h-8 after:shrink-0">
+
+                    <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 w-full shrink-0">
+                        <div id="result-visual-container"
+                            class="w-full lg:w-[48%] flex items-center justify-center min-h-[260px] lg:min-h-[340px] relative shrink-0">
+                        </div>
+
+                        <div class="w-full lg:w-[52%] flex flex-col justify-center h-full pt-2 md:pt-0">
+                            <div id="output-text"
+                                class="output-text font-sans text-charcoal text-[14px] md:text-[15px] leading-relaxed bg-[#F8F9FA]/80 p-5 md:p-8 rounded-[1rem] md:rounded-[1.5rem] border border-tuvBlue/10 shadow-sm relative overflow-hidden">
+                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-tuvBlue"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="contact-extra-content" class="w-full mt-6 shrink-0 block"></div>
+
+                    <div class="shrink-0 flex items-center justify-between mt-8 w-full px-2 md:px-8">
+                        <button onclick="copyResult()"
+                            class="bg-tuvBlue text-white px-5 py-3 font-mono uppercase tracking-widest text-[11px] font-bold rounded hover:bg-tuvBlueLight hover:-translate-y-0.5 transition-all shadow-[0_4px_10px_rgba(0,113,185,0.2)] flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                            </svg>
+                            <span id="copy-btn-text">拷贝结果</span>
+                        </button>
+                        <button onclick="resetEngine()"
+                            class="bg-transparent text-tuvBlue border border-tuvBlue/30 px-5 py-3 font-mono uppercase tracking-widest text-[11px] font-bold rounded hover:bg-tuvBlue/5 transition-all">
+                            <span id="restart-btn-text">重新测试</span>
+                        </button>
+                    </div>
+
+                </div>
+
+                <div class="shrink-0 pt-4 mt-2 border-t border-tuvBlue/10 text-center">
+                    <p id="disclaimer-bottom" class="font-mono text-[10px] text-charcoal/40 tracking-wide">
+                        此判定仅供参考，本问卷并未考虑产品其他可能令其改变分类的设计或技术细节。 如需更详细的分析，请向TUV莱茵查询。
+                    </p>
+                    <p class="mt-1 font-mono text-[10px] text-charcoal/40 tracking-wide">&copy; 2026 TÜV Rheinland.
+                        <span id="rights-bottom">All rights reserved.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const CONTENT = {
+            zh: {
+                htmlLang: 'zh-CN',
+                title: 'EU CRA网络弹性法案分级评估工具 | TÜV Rheinland',
+                headerTitle: 'EU CRA网络弹性法案分级评估工具',
+                headerSub1: 'EU CRA',
+                headerSub2: 'Cyber Resilience Act Classification Tool',
+                reset: '重新测试',
+                welcomeTitle: 'EU CRA网络弹性法案分级评估工具',
+                welcomeDesc: '欢迎使用《欧盟网络弹性法案》(CRA) 产品分级评估工具。本框架将通过一系列预审问题，帮助您初步了解您的带数字元素的软硬件产品在CRA下的分类与合规要求。',
+                start: '开始测试',
+                disclaimer: '此判定仅供参考，本问卷并未考虑产品其他可能令其改变分类的设计或技术细节。 如需更详细的分析，请向TUV莱茵查询。',
+                rights: 'All rights reserved.',
+                back: '返回上一题',
+                resultBadge: '[ 测试结果 ]',
+                copy: '拷贝结果',
+                restartTest: '重新测试',
+                copyAlert: '结果已拷贝。',
+                tierNames: {
+                    OUT_CRITICAL: '关键类 (Critical)',
+                    OUT_CLASS2: '重要II类 (Important Class II)',
+                    OUT_CLASS1: '重要I类 (Important Class I)',
+                    OUT_DEFAULT: '默认类 (Default)'
+                },
+                contactTitle: 'TÜV莱茵电子电气产品服务',
+                contactDesc: '依托全球权威资质体系，面向显示、通信与智能终端等多领域产品，提供涵盖安全合规、能效、EMC、RF、网络安全及AI相关服务在内的全链条检测认证解决方案。',
+                contactUs: 'Contact Us',
+                followUs: '关注我们',
+                contactShort: '联系我们',
+                qr1Alt: '服务号二维码',
+                qr2Alt: '问卷调查二维码',
+                outputs: {
+                    OUT_NOT_CRA: '您的产品不受CRA管辖。\n\n本法案仅针对特定范围内的带数字元素的产品。基于您的回答，您的产品可能未进入欧盟市场、属于特殊豁免品类或不具备数字/网络连接属性。\n建议您确保持续关注其他适用的欧盟法规（如MDR、车载等专属法规）。',
+                    OUT_CRITICAL: '您的产品很可能属于《欧盟网络弹性法案》(CRA) 规定的 关键类 (Critical Category)。\n\n此类产品涉及国家或泛欧层面的关键基础设施安全。根据CRA要求，关键类产品须满足最严格的合规性要求，通常强制要求由欧盟公告机构 (Notified Body) 进行第三方认证，甚至可能需要获取欧洲网络安全证书。\n\nTÜV莱茵可为您提供深入的合规路径规划与严格的测试认证服务。',
+                    OUT_CLASS2: '您的产品很可能属于《欧盟网络弹性法案》(CRA) 规定的 重要II类 (Important Class II)。\n\n此类产品通常是核心网络安全组件。根据法案要求，重要II类产品高度敏感，强制要求由欧盟公告机构 (Notified Body) 进行严格的第三方合格评定。\n\nTÜV莱茵作为专业的第三方检测认证机构，可助力您的产品顺利通过合规验证，安全进入欧盟市场。',
+                    OUT_CLASS1: '您的产品很可能属于《欧盟网络弹性法案》(CRA) 规定的 重要I类 (Important Class I)。\n\n此类产品具有较高的网络安全风险。制造商除了需满足法案基本网络安全要求并建立漏洞处理机制外，通常还需要经过公告机构 (Notified Body) 的第三方合格评定（除非制造商能够完全适用并遵守特定的欧盟协调标准）。\n\n请联系 TÜV莱茵获取对应的技术文档审核与评估支持。',
+                    OUT_DEFAULT: '您的产品很可能属于《欧盟网络弹性法案》(CRA) 规定的 默认类 (Default Category)。\n\n大部分带有数字元素且具备数据连接功能的消费类或通用软硬件均属于此类。制造商需要满足法案规定的基本网络安全要求，实施漏洞处理流程，并可以根据内部控制流程进行自我符合性声明 (CE 标识)。\n\nTÜV莱茵可协助您开展网络安全基线评估与流程建立，降低违规风险。'
+                },
+                nodes: {
+                    'q1': {
+                        step: 1,
+                        q: '您的产品是否将会售于欧盟市场?',
+                        options: [
+                            { text: '是，将会进入欧盟市场。', next: 'q2' },
+                            { text: '否。', output: 'OUT_NOT_CRA' }
+                        ]
+                    },
+                    'q2': {
+                        step: 2,
+                        q: '您的产品是否属于以下任何一类？',
+                        options: [
+                            { text: '是，属于以下列表之一：<br><span class="text-xs text-charcoal/70 leading-normal block mt-1">• 医疗相关设备 (MDR 与 IVDR)<br>• 国防或国家安全相关设备<br>• Directive 2014/90/EU 下的船舶设备<br>• Regulation (EU) 2019/2144 下的车载设备<br>• 在EASA框架下认证的航空设备<br>• 原生SaaS<br>• 用作替换零件的产品</span>', output: 'OUT_NOT_CRA' },
+                            { text: '否，不属于以上的任何一类。', next: 'q3' }
+                        ]
+                    },
+                    'q3': {
+                        step: 3,
+                        q: '您的产品是否有数字元素?<br><span class="text-sm text-charcoal/60">（例如有可编程芯片 / 有固件）</span>',
+                        options: [
+                            { text: '是，包含数字元素。', next: 'q4' },
+                            { text: '否。', output: 'OUT_NOT_CRA' }
+                        ]
+                    },
+                    'q4': {
+                        step: 4,
+                        q: '您的产品是否具备与其他设备或网络进行数字数据连接的能力?<br><span class="text-sm text-charcoal/60">(例如: 有USB, WiFi等物理或无线通信接口)</span>',
+                        options: [
+                            { text: '是，具备数据连接能力。', next: 'q5' },
+                            { text: '否。', output: 'OUT_NOT_CRA' }
+                        ]
+                    },
+                    'q5': {
+                        step: 5,
+                        q: '产品的预期用途是否属于以下任何一类?',
+                        options: [
+                            { text: '是，属于以下列表之一：<br><span class="text-xs text-charcoal/70 leading-normal block mt-1">• 带安全盒的硬件设备<br>• 支付终端 / POS机 / 带付款功能的手环<br>• 生成/管理加密金钥的硬件安全模组HSM<br>• 用于商用车辆的数字行车记录器Tachograph<br>• 智能电表网关<br>• 智能卡 / SIM卡 / 嵌入式通用集成电路卡 / eSIM<br>• 可信平台模块TPM</span>', output: 'OUT_CRITICAL' },
+                            { text: '否，不属于以上的任何一类。', next: 'q6' }
+                        ]
+                    },
+                    'q6': {
+                        step: 6,
+                        q: '产品的预期用途是否属于以下任何一类?',
+                        options: [
+                            { text: '是，属于以下列表之一：<br><span class="text-xs text-charcoal/70 leading-normal block mt-1">• 虚拟机管理器Hypervisor<br>• 容器运行时系统<br>• 防火墙<br>• 入侵检测系统IDS<br>• 入侵防御系统IPS<br>• 防篡改微处理器/微控制器</span>', output: 'OUT_CLASS2' },
+                            { text: '否，不属于以上的任何一类。', next: 'q7' }
+                        ]
+                    },
+                    'q7': {
+                        step: 7,
+                        q: '产品的预期用途是否属于以下任何一类?',
+                        options: [
+                            { text: '是，属于以下列表中的某一项：<br><span class="text-xs text-charcoal/70 leading-normal block mt-1">身份管理系统软硬件、特权访问管理设备、网路管理系统、SIEM 系统、公钥基础设施与证书签发软件、操作系统、独立/嵌入式浏览器、密码管理器、防恶意/防毒软件、启动管理器、VPN产品、物理与虚拟网络接口、路由器、调制解调器、交换器、无线存取点(AP)、具备安全功能的微处理器/微控制器、安全相关的ASIC/FPGA、智能家居通用虚拟助理、智能门锁、智能摄像头CCTV、智能婴儿监视器、警报器、其他保护家居安全的智能家居产品。</span>', output: 'OUT_CLASS1' },
+                            { text: '我的产品属于 <strong>玩具</strong>', next: 'q8' },
+                            { text: '我的产品属于 <strong>穿戴式设备</strong>', next: 'q10' },
+                            { text: '否，不属于以上的任何一类。', output: 'OUT_DEFAULT' }
+                        ]
+                    },
+                    'q8': {
+                        step: 8,
+                        q: '您的玩具是否能够连线到互联网?',
+                        options: [
+                            { text: '是。', next: 'q9' },
+                            { text: '否。', output: 'OUT_DEFAULT' }
+                        ]
+                    },
+                    'q9': {
+                        step: 9,
+                        q: '您的玩具是否具备以下的功能?',
+                        options: [
+                            { text: '具备 <strong>位置追踪功能</strong> 或 <strong>社交互动功能</strong> (例如透过对话、摄像头、文字进行双向互动)', output: 'OUT_CLASS1' },
+                            { text: '否，不具备以上的任何功能。', output: 'OUT_DEFAULT' }
+                        ]
+                    },
+                    'q10': {
+                        step: 8, // branch step aligned for progress visual
+                        q: '您的穿戴设备是否具备健康监测功能(例如: 心跳、血压)?',
+                        options: [
+                            { text: '是。', output: 'OUT_CLASS1' },
+                            { text: '否。', next: 'q11' }
+                        ]
+                    },
+                    'q11': {
+                        step: 9,
+                        q: '您的穿戴设备是否为14岁以下儿童而设?',
+                        options: [
+                            { text: '是。', output: 'OUT_CLASS1' },
+                            { text: '否。', output: 'OUT_DEFAULT' }
+                        ]
+                    }
+                }
+            },
+
+            en: {
+                htmlLang: 'en',
+                title: 'EU CRA Risk Classification Assessment Tool | TÜV Rheinland',
+                headerTitle: 'EU CRA Classification Tool',
+                headerSub1: 'EU Cyber Resilience Act',
+                headerSub2: 'Classification Assessment Tool',
+                reset: 'Restart',
+                welcomeTitle: 'EU CRA Classification Tool',
+                welcomeDesc: 'Welcome to the Cyber Resilience Act (CRA) Assessment Framework. This tool will help you preliminarily understand the risk classification and compliance requirements of your products with digital elements under the EU CRA.',
+                start: 'Start Assessment',
+                disclaimer: 'This determination is for reference only; this questionnaire does not take into account other design or technical details that may alter the classification of products .For a more detailed analysis, please contact TÜV Rheinland.',
+                rights: 'All rights reserved.',
+                back: 'Go Back',
+                resultBadge: '[ Assessment Result ]',
+                copy: 'Copy Result',
+                restartTest: 'Restart Test',
+                copyAlert: 'Result copied to clipboard.',
+                tierNames: {
+                    OUT_CRITICAL: 'Critical',
+                    OUT_CLASS2: 'Important Class II',
+                    OUT_CLASS1: 'Important Class I',
+                    OUT_DEFAULT: 'Default Category'
+                },
+                contactTitle: 'TÜV Rheinland Electrical',
+                contactDesc: 'Relying on a globally authoritative qualification system, we provide end-to-end testing and certification solutions for displays, communications, and smart terminals, covering safety compliance, energy efficiency, EMC, RF, cybersecurity, and AI-related services.',
+                contactUs: 'Contact Us',
+                followUs: 'Follow Us',
+                contactShort: 'Contact Us',
+                qr1Alt: 'QR Code',
+                qr2Alt: 'Contact QR Code',
+                outputs: {
+                    OUT_NOT_CRA: 'Your product falls OUTSIDE the scope of the CRA.\n\nThis regulation only targets specific products with digital elements. Based on your answers, your product might not enter the EU, falls under a specific exemption, or lacks digital/network attributes.\nPlease ensure continuous compliance with other applicable EU regulations (e.g., MDR).',
+                    OUT_CRITICAL: 'Your product is highly likely classified as a Critical Category under the CRA.\n\nThese products involve critical infrastructure security at national or pan-European levels. They must meet the strictest compliance requirements, often mandating third-party certification by a Notified Body, and potentially requiring a European cybersecurity certificate.\n\nTÜV Rheinland can provide in-depth compliance planning and strict testing services.',
+                    OUT_CLASS2: 'Your product is highly likely classified as Important Class II under the CRA.\n\nThese are typically core cybersecurity components. Due to their high sensitivity, they strictly require a third-party conformity assessment by an EU Notified Body.\n\nAs a professional third-party testing agency, TÜV Rheinland can help your product pass compliance verification smoothly.',
+                    OUT_CLASS1: 'Your product is highly likely classified as Important Class I under the CRA.\n\nThese products have elevated cybersecurity risks. Besides meeting essential cybersecurity requirements and establishing vulnerability handling mechanisms, they usually require third-party conformity assessment by a Notified Body (unless specific EU harmonized standards are fully applied and adhered to).',
+                    OUT_DEFAULT: 'Your product is highly likely classified as the Default Category under the CRA.\n\nMost hardware and software with digital elements and data connection capabilities fall here. Manufacturers must meet essential cybersecurity requirements, implement vulnerability handling, and can issue a self-declaration of conformity (CE marking) based on internal control procedures.\n\nTÜV Rheinland can assist you in conducting baseline assessments to mitigate risks.'
+                },
+                nodes: {
+                    'q1': {
+                        step: 1,
+                        q: 'Is your product intended to be sold on the EU market?',
+                        options: [
+                            { text: 'Yes, it will enter the EU market.', next: 'q2' },
+                            { text: 'No.', output: 'OUT_NOT_CRA' }
+                        ]
+                    },
+                    'q2': {
+                        step: 2,
+                        q: 'Does your product fall into any of the following categories?',
+                        options: [
+                            { text: 'Yes, it belongs to one of these:<br><span class="text-xs text-charcoal/70 leading-normal block mt-1">• Medical Devices (MDR/IVDR)<br>• Defense or National Security equipment<br>• Marine equipment (Dir 2014/90/EU)<br>• Motor vehicle equipment (Reg 2019/2144)<br>• Aviation equipment under EASA (Reg 2018/1139)<br>• Native SaaS<br>• Products used as replacement parts</span>', output: 'OUT_NOT_CRA' },
+                            { text: 'No, it does not belong to any of the above.', next: 'q3' }
+                        ]
+                    },
+                    'q3': {
+                        step: 3,
+                        q: 'Does your product have digital elements?<br><span class="text-sm text-charcoal/60">(e.g., programmable chips / firmware)</span>',
+                        options: [
+                            { text: 'Yes.', next: 'q4' },
+                            { text: 'No.', output: 'OUT_NOT_CRA' }
+                        ]
+                    },
+                    'q4': {
+                        step: 4,
+                        q: 'Does your product have the capability to connect with other devices or networks digitally?<br><span class="text-sm text-charcoal/60">(e.g., USB, WiFi, or other physical/wireless interfaces)</span>',
+                        options: [
+                            { text: 'Yes.', next: 'q5' },
+                            { text: 'No.', output: 'OUT_NOT_CRA' }
+                        ]
+                    },
+                    'q5': {
+                        step: 5,
+                        q: 'Does the intended use of your product fall into any of the following categories?',
+                        options: [
+                            { text: 'Yes, it belongs to one of these:<br><span class="text-xs text-charcoal/70 leading-normal block mt-1">• Hardware devices with security boxes<br>• Payment terminals / POS / Smartbands with payment<br>• Hardware Security Modules (HSM)<br>• Digital Tachographs for commercial vehicles<br>• Smart meter gateways<br>• Smart cards / SIMs / eSIMs<br>• Trusted Platform Modules (TPM)</span>', output: 'OUT_CRITICAL' },
+                            { text: 'No, it does not belong to any of the above.', next: 'q6' }
+                        ]
+                    },
+                    'q6': {
+                        step: 6,
+                        q: 'Does the intended use of your product fall into any of the following categories?',
+                        options: [
+                            { text: 'Yes, it belongs to one of these:<br><span class="text-xs text-charcoal/70 leading-normal block mt-1">• Hypervisors<br>• Container runtime systems<br>• Firewalls<br>• Intrusion Detection Systems (IDS)<br>• Intrusion Prevention Systems (IPS)<br>• Tamper-resistant microprocessors</span>', output: 'OUT_CLASS2' },
+                            { text: 'No, it does not belong to any of the above.', next: 'q7' }
+                        ]
+                    },
+                    'q7': {
+                        step: 7,
+                        q: 'Does the intended use of your product fall into any of the following categories?',
+                        options: [
+                            { text: 'Yes, it is one of the following:<br><span class="text-xs text-charcoal/70 leading-normal block mt-1">Identity mgmt, Privileged access mgmt, Network mgmt, SIEM, PKI, OS, Browsers, Password managers, Antivirus, Boot managers, VPN, Network interfaces, Routers, Modems, Switches, Wireless AP, Microcontrollers with security, Security ASIC/FPGA, Smart home assistants, Smart door locks, Smart CCTV, Smart baby monitors, Alarm systems, Other smart home security.</span>', output: 'OUT_CLASS1' },
+                            { text: 'My product is a <strong>Toy</strong>', next: 'q8' },
+                            { text: 'My product is a <strong>Wearable device</strong>', next: 'q10' },
+                            { text: 'No, it does not belong to any of the above.', output: 'OUT_DEFAULT' }
+                        ]
+                    },
+                    'q8': {
+                        step: 8,
+                        q: 'Can your toy connect to the Internet?',
+                        options: [
+                            { text: 'Yes.', next: 'q9' },
+                            { text: 'No.', output: 'OUT_DEFAULT' }
+                        ]
+                    },
+                    'q9': {
+                        step: 9,
+                        q: 'Does your toy have any of the following functions?',
+                        options: [
+                            { text: 'It has <strong>Location tracking</strong> OR <strong>Social interaction</strong> (e.g., two-way interaction via voice/camera/text)', output: 'OUT_CLASS1' },
+                            { text: 'No, it does not have these functions.', output: 'OUT_DEFAULT' }
+                        ]
+                    },
+                    'q10': {
+                        step: 8,
+                        q: 'Does your wearable device have health monitoring functions (e.g., heart rate, blood pressure)?',
+                        options: [
+                            { text: 'Yes.', output: 'OUT_CLASS1' },
+                            { text: 'No.', next: 'q11' }
+                        ]
+                    },
+                    'q11': {
+                        step: 9,
+                        q: 'Is your wearable device designed for children under 14 years old?',
+                        options: [
+                            { text: 'Yes.', output: 'OUT_CLASS1' },
+                            { text: 'No.', output: 'OUT_DEFAULT' }
+                        ]
+                    }
+                }
+            }
+        };
+
+        let currentLang = 'zh';
+        let historyStack = [];
+        let currentOutput = null;
+        const MAX_STEPS = 9; // Longest logic path length
+
+        const greetingView = document.getElementById('greeting-view');
+        const consoleContainer = document.getElementById('console-container');
+        const optionsContainer = document.getElementById('options-container');
+        const resultView = document.getElementById('result-view');
+        const btnBack = document.getElementById('btn-back');
+        const progressBar = document.getElementById('progress-bar');
+        const questionText = document.getElementById('question-text');
+        const outputText = document.getElementById('output-text');
+        const resultVisualContainer = document.getElementById('result-visual-container');
+        const contactExtraContainer = document.getElementById('contact-extra-content');
+
+        function content() {
+            return CONTENT[currentLang];
+        }
+
+        function getNodes() {
+            return content().nodes;
+        }
+
+        function getOutputs() {
+            return content().outputs;
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+
+            document.documentElement.lang = content().htmlLang;
+            document.title = content().title;
+
+            document.getElementById('lang-zh').classList.toggle('active', lang === 'zh');
+            document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+
+            document.getElementById('header-title').textContent = content().headerTitle;
+            document.getElementById('header-subtitle').innerHTML = `<span>${content().headerSub1}</span><span>${content().headerSub2}</span>`;
+            document.getElementById('header-reset-text').textContent = content().reset;
+
+            document.getElementById('welcome-title').textContent = content().welcomeTitle;
+            document.getElementById('welcome-desc').textContent = content().welcomeDesc;
+            document.getElementById('start-btn-text').textContent = content().start;
+
+            document.getElementById('disclaimer-top').textContent = content().disclaimer;
+            document.getElementById('disclaimer-bottom').textContent = content().disclaimer;
+            document.getElementById('rights-top').textContent = content().rights;
+            document.getElementById('rights-bottom').textContent = content().rights;
+
+            document.getElementById('back-btn-text').textContent = content().back;
+            document.getElementById('result-back-btn-text').textContent = content().back;
+            document.getElementById('result-badge').textContent = content().resultBadge;
+            document.getElementById('copy-btn-text').textContent = content().copy;
+            document.getElementById('restart-btn-text').textContent = content().restartTest;
+
+            renderCurrentState();
+        }
+
+        function formatItalicEmphasis(text) {
+            let regex;
+            if (currentLang === 'zh') {
+                regex = /(CRA|默认类|重要I类|重要II类|关键类|默认|关键)/g;
+            } else {
+                regex = /(CRA|Cyber Resilience Act|Default Category|Important Class I|Important Class II|Critical Category|Default|Critical)/g;
+            }
+            let formatted = text.replace(regex, '<span class="risk-italic">$1</span>');
+            return formatted.replace(/\n/g, '<br>');
+        }
+
+        function renderCurrentState() {
+            if (historyStack.length === 0 && !currentOutput) {
+                greetingView.style.display = 'flex';
+                consoleContainer.style.display = 'none';
+                resultView.style.display = 'none';
+                gsap.fromTo(greetingView, { opacity: 0, scale: 0.98 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'power3.out' });
+            } else if (currentOutput) {
+                renderOutput();
+            } else {
+                renderNode();
+            }
+        }
+
+        function startDiagnostic() {
+            gsap.to(greetingView, {
+                opacity: 0, scale: 0.98, duration: 0.3, ease: 'power2.in', onComplete: () => {
+                    historyStack = ['q1'];
+                    greetingView.style.display = 'none';
+                    greetingView.style.opacity = 1;
+                    greetingView.style.transform = 'scale(1)';
+                    renderCurrentState();
+                }
+            });
+        }
+
+        function renderNode() {
+            const nodeId = historyStack[historyStack.length - 1];
+            const node = getNodes()[nodeId];
+
+            btnBack.disabled = historyStack.length === 1;
+            progressBar.style.width = `${(node.step / MAX_STEPS) * 100}%`;
+
+            // Clean up question texts keeping spans intact if provided
+            questionText.innerHTML = node.q;
+
+            Array.from(optionsContainer.children).forEach(child => {
+                if (child.id !== 'question-view') child.remove();
+            });
+            optionsContainer.scrollTop = 0;
+
+            node.options.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.className = 'spotlight-card px-4 md:px-5 py-3 md:py-4 cursor-pointer focus:outline-none text-left flex items-center group shrink-0 transition-all';
+                btn.innerHTML = `
+                    <span class="bracket left hidden md:inline-block">[</span>
+                    <span class="font-sans text-[13px] md:text-[15px] text-charcoal z-10 w-full pr-6">${opt.text}</span>
+                    <div class="absolute right-3 md:right-4 w-5 h-5 shrink-0 border border-tuvBlue/30 flex items-center justify-center text-tuvBlue opacity-0 group-[.active-selected]:opacity-100 md:group-hover:opacity-100 transition-opacity z-10 bg-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                    <span class="bracket right hidden md:inline-block">]</span>
+                `;
+                btn.onclick = () => {
+                    Array.from(optionsContainer.children).forEach(child => child.classList.remove('active-selected'));
+                    btn.classList.add('active-selected');
+                    proceedToNext(opt);
+                };
+                optionsContainer.appendChild(btn);
+            });
+
+            greetingView.style.display = 'none';
+            resultView.style.display = 'none';
+            consoleContainer.style.display = 'flex';
+            gsap.fromTo(optionsContainer.children, { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.4, stagger: 0.05, ease: 'power2.out' });
+        }
+
+        function proceedToNext(opt) {
+            gsap.to(consoleContainer, {
+                opacity: 0, scale: 0.98, duration: 0.2, ease: 'power2.in', onComplete: () => {
+                    if (opt.output) currentOutput = opt.output;
+                    else if (opt.next) historyStack.push(opt.next);
+                    consoleContainer.style.opacity = 1;
+                    consoleContainer.style.transform = 'scale(1)';
+                    renderCurrentState();
+                }
+            });
+        }
+
+        function renderOutput() {
+            consoleContainer.style.display = 'none';
+            resultView.style.display = 'flex';
+
+            let visualHTML = '';
+
+            if (['OUT_CRITICAL', 'OUT_CLASS2', 'OUT_CLASS1', 'OUT_DEFAULT'].includes(currentOutput)) {
+                // Mapped to 4 CRA tiers
+                const TIERS = [
+                    { name: content().tierNames.OUT_CRITICAL, colorLeft: '#B33B18', colorRight: '#DA4B21', activeOut: 'OUT_CRITICAL' },
+                    { name: content().tierNames.OUT_CLASS2, colorLeft: '#BE6300', colorRight: '#E57800', activeOut: 'OUT_CLASS2' },
+                    { name: content().tierNames.OUT_CLASS1, colorLeft: '#DBA10A', colorRight: '#F9BB10', activeOut: 'OUT_CLASS1' },
+                    { name: content().tierNames.OUT_DEFAULT, colorLeft: '#008896', colorRight: '#00A8B6', activeOut: 'OUT_DEFAULT' }
+                ];
+
+                let t = 0;
+                let svgContent = '';
+
+                TIERS.forEach((tier) => {
+                    let isActive = (tier.activeOut === currentOutput);
+                    let size = isActive ? 0.55 : 0.15;
+                    let t1 = t;
+                    let t2 = t + size;
+                    t = t2;
+
+                    const X_CENTER = 130;
+                    const DX = 100;
+                    const DY_MID = 240;
+                    const DY_EDGE = 180;
+                    const Y_BASE = 45;
+
+                    let pt1 = `${X_CENTER},${Y_BASE + DY_MID * t1}`;
+                    let pl2 = `${X_CENTER - DX * t1},${Y_BASE + DY_EDGE * t1}`;
+                    let pl3 = `${X_CENTER - DX * t2},${Y_BASE + DY_EDGE * t2}`;
+                    let pt4 = `${X_CENTER},${Y_BASE + DY_MID * t2}`;
+
+                    let pr2 = `${X_CENTER + DX * t1},${Y_BASE + DY_EDGE * t1}`;
+                    let pr3 = `${X_CENTER + DX * t2},${Y_BASE + DY_EDGE * t2}`;
+
+                    let faceLeft = `<polygon points="${pt1} ${pl2} ${pl3} ${pt4}" fill="${tier.colorLeft}" stroke="rgba(255,255,255,0.15)" stroke-width="0.5" stroke-linejoin="round" />`;
+                    let faceRight = `<polygon points="${pt1} ${pr2} ${pr3} ${pt4}" fill="${tier.colorRight}" stroke="rgba(255,255,255,0.15)" stroke-width="0.5" stroke-linejoin="round" />`;
+
+                    let avgX = X_CENTER + (DX * t1 + DX * t2) / 4;
+                    let avgY = Y_BASE + (DY_MID * t1 + DY_EDGE * t1 + DY_EDGE * t2 + DY_MID * t2) / 4;
+
+                    let jointX = avgX + 25;
+                    let jointY = avgY - 10;
+                    let endX = 265;
+
+                    let callout = `
+                        <polyline points="${avgX},${avgY} ${jointX},${jointY} ${endX},${jointY}" fill="none" stroke="${isActive ? tier.colorRight : 'rgba(134,134,139,0.3)'}" stroke-width="${isActive ? 2 : 1.5}" />
+                        <circle cx="${avgX}" cy="${avgY}" r="${isActive ? 3.5 : 2}" fill="${isActive ? '#fff' : tier.colorRight}" stroke="${tier.colorRight}" stroke-width="${isActive ? 2 : 0}" />
+                        <circle cx="${endX}" cy="${jointY}" r="1.5" fill="${isActive ? tier.colorRight : 'rgba(134,134,139,0.5)'}" />
+                        <text x="${endX + 10}" y="${jointY + 1}" fill="${isActive ? tier.colorRight : '#86868b'}" font-size="${isActive ? '14' : '11'}" font-weight="${isActive ? '700' : '500'}" dominant-baseline="central" font-family="'Plus Jakarta Sans', sans-serif" letter-spacing="0.5">
+                            ${tier.name}
+                        </text>
+                    `;
+
+                    svgContent += `
+                        <g class="tier-layer" opacity="0">
+                            ${faceLeft}
+                            ${faceRight}
+                            ${isActive ? `<polygon points="${pt1} ${pr2} ${pr3} ${pt4}" fill="white" opacity="0.1" />` : ''} 
+                            ${callout}
+                        </g>
+                    `;
+                });
+
+                visualHTML = `
+                <div class="relative w-full h-full flex items-center justify-center p-4">
+                    <svg viewBox="0 0 450 320" class="w-full max-w-full h-auto drop-shadow-xl overflow-visible z-10">
+                        ${svgContent}
+                    </svg>
+                </div>
+                `;
+            }
+            else if (currentOutput === 'OUT_NOT_CRA') {
+                visualHTML = `
+                <div class="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center text-tuvBlue">
+                    <svg class="absolute inset-0 w-full h-full animate-[spin_20s_linear_infinite] opacity-30" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="48" fill="none" stroke="currentColor" stroke-width="0.5" stroke-dasharray="2 4"/>
+                        <circle cx="50" cy="50" r="35" fill="none" stroke="currentColor" stroke-width="0.5" stroke-dasharray="5 5"/>
+                        <circle cx="50" cy="50" r="22" fill="none" stroke="currentColor" stroke-width="0.5"/>
+                        <line x1="50" y1="2" x2="50" y2="98" stroke="currentColor" stroke-width="0.2" opacity="0.5"/>
+                        <line x1="2" y1="50" x2="98" y2="50" stroke="currentColor" stroke-width="0.2" opacity="0.5"/>
+                    </svg>
+                    <svg class="w-16 h-16 md:w-20 md:h-20 relative z-10 drop-shadow-[0_0_15px_rgba(0,113,185,0.4)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+                    </svg>
+                    <div class="absolute w-3 h-3 bg-techCyan rounded-full top-[30%] left-[25%] animate-ping opacity-60"></div>
+                </div>`;
+            }
+
+            resultVisualContainer.innerHTML = visualHTML;
+            outputText.innerHTML = formatItalicEmphasis(getOutputs()[currentOutput]);
+
+            contactExtraContainer.innerHTML = `
+                <div class="w-full bg-white/70 border border-tuvBlue/15 rounded-[1.5rem] shadow-sm relative overflow-hidden flex flex-col md:flex-row gap-6 p-6">
+                    <div class="absolute -right-8 -top-8 w-40 h-40 bg-tuvBlue/5 rounded-full blur-2xl pointer-events-none"></div>
+                    
+                    <div class="flex-1 flex flex-col justify-center">
+                        <h4 class="text-tuvBlue font-bold text-[14px] md:text-base mb-3 flex items-center gap-2">
+                            <svg class="w-4 h-4 md:w-5 md:h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            ${content().contactTitle}
+                        </h4>
+                        <p class="text-[12px] md:text-[13px] text-charcoal/70 leading-relaxed text-justify">
+                            ${content().contactDesc}
+                        </p>
+                    </div>
+                    
+                    <div class="hidden md:block w-px bg-tuvBlue/10 self-stretch"></div>
+                    <div class="md:hidden h-px w-full bg-tuvBlue/10"></div>
+
+                    <div class="flex flex-col sm:flex-row gap-6 items-start sm:items-center shrink-0 w-full sm:w-auto">
+                        <div class="space-y-3">
+                            <div class="text-[10px] uppercase font-mono tracking-widest text-muted font-bold">${content().contactUs}</div>
+                            <div class="flex items-center gap-3 text-[12px] text-charcoal">
+                                <div class="w-7 h-7 rounded-full bg-tuvBlue/10 flex items-center justify-center text-tuvBlue shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                </div>
+                                <span class="font-mono font-medium text-[13px]">+86 755 8268 1288</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-[12px] text-charcoal">
+                                <div class="w-7 h-7 rounded-full bg-tuvBlue/10 flex items-center justify-center text-tuvBlue shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                </div>
+                                <span class="font-mono font-medium text-[13px]">Evelyn.Tang@tuv.com</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3 shrink-0 w-full sm:w-auto justify-center sm:justify-start self-center sm:self-auto">
+                            <div class="flex flex-col items-center gap-1.5">
+                                <div class="w-[64px] h-[64px] bg-white border border-tuvBlue/20 rounded-md flex items-center justify-center p-1 shadow-sm overflow-hidden">
+                                    <img src="./qrcode.jpg" alt="${content().qr1Alt}" class="w-full h-full object-cover rounded-sm">
+                                </div>
+                                <span class="text-[9px] text-charcoal/60 tracking-wider font-medium">${content().followUs}</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-1.5">
+                                <div class="w-[64px] h-[64px] bg-white border border-tuvBlue/20 rounded-md flex items-center justify-center p-1 shadow-sm overflow-hidden">
+                                    <img src="./Registration.jpg" alt="${content().qr2Alt}" class="w-full h-full object-cover rounded-sm">
+                                </div>
+                                <span class="text-[9px] text-charcoal/60 tracking-wider font-medium">${content().contactShort}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const resultScrollArea = resultView.querySelector('.overflow-y-auto');
+            if (resultScrollArea) {
+                resultScrollArea.scrollTop = 0;
+            }
+
+            gsap.fromTo(resultView, { opacity: 0, scale: 0.98 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'power3.out' });
+
+            const tierLayers = document.querySelectorAll('.tier-layer');
+            if (tierLayers.length > 0) {
+                gsap.fromTo(tierLayers,
+                    { opacity: 0, y: 15 },
+                    { opacity: 1, y: 0, duration: 0.7, stagger: 0.15, ease: 'back.out(1.2)', delay: 0.2 }
+                );
+            }
+        }
+
+        function goBack() {
+            if (historyStack.length > 1) {
+                gsap.to(consoleContainer, {
+                    opacity: 0, x: 20, duration: 0.2, ease: 'power2.in', onComplete: () => {
+                        historyStack.pop();
+                        currentOutput = null;
+                        consoleContainer.style.opacity = 1;
+                        consoleContainer.style.transform = 'translateX(0)';
+                        renderCurrentState();
+                    }
+                });
+            }
+        }
+
+        function goBackFromResult() {
+            gsap.to(resultView, {
+                opacity: 0, scale: 0.98, duration: 0.2, ease: 'power2.in', onComplete: () => {
+                    currentOutput = null;
+                    resultView.style.opacity = 1;
+                    resultView.style.transform = 'scale(1)';
+                    renderCurrentState();
+                }
+            });
+        }
+
+        function resetEngine() {
+            gsap.to([consoleContainer, resultView], {
+                opacity: 0, duration: 0.3, onComplete: () => {
+                    historyStack = [];
+                    currentOutput = null;
+                    consoleContainer.style.opacity = 1;
+                    resultView.style.opacity = 1;
+                    renderCurrentState();
+                }
+            });
+        }
+
+        function copyResult() {
+            navigator.clipboard.writeText(getOutputs()[currentOutput]).then(() => {
+                alert(content().copyAlert);
+            });
+        }
+
+        setLanguage('zh');
+        renderCurrentState();
+    </script>
+</body>
+
+</html>
