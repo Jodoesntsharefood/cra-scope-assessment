@@ -79,14 +79,21 @@
 
         .custom-scrollbar {
             overflow-y: auto;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 113, 185, 0.2) transparent;
         }
 
         .custom-scrollbar::-webkit-scrollbar {
-            display: none;
-            width: 0px;
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
             background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 113, 185, 0.2);
+            border-radius: 10px;
         }
 
         .instrument-panel {
@@ -334,7 +341,7 @@
             <div class="instrument-crosshairs-bottom hidden md:block"></div>
             <div class="relative z-10 flex flex-col h-full p-4 md:p-10">
                 <div
-                    class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 shrink-0 border-b border-tuvBlue/10 pb-6">
+                    class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 shrink-0 border-b border-tuvBlue/10 pb-4">
                     <div class="flex items-center gap-4">
                         <button id="btn-back" onclick="goBack()"
                             class="flex items-center gap-2 px-3 py-1.5 rounded bg-tuvBlue/5 border border-tuvBlue/20 text-tuvBlue font-mono text-[11px] tracking-widest uppercase hover:bg-tuvBlue hover:text-white transition-all duration-300 disabled:opacity-30 disabled:pointer-events-none">
@@ -352,10 +359,10 @@
                     </div>
                 </div>
                 <div id="options-container"
-                    class="flex-1 flex flex-col gap-3 custom-scrollbar px-3 -mx-3 pt-2 relative z-20 pb-6 after:content-[''] after:block after:h-8 after:shrink-0">
-                    <div id="question-view" class="mb-4 md:mb-6 shrink-0 mt-2">
+                    class="flex-1 flex flex-col gap-2.5 custom-scrollbar px-3 -mx-3 pt-2 relative z-20 pb-6 after:content-[''] after:block after:h-8 after:shrink-0">
+                    <div id="question-view" class="mb-3 md:mb-4 shrink-0 mt-2">
                         <h2 id="question-text"
-                            class="font-display text-[17px] md:text-2xl text-charcoal font-semibold leading-relaxed tracking-tight">
+                            class="font-display text-[17px] md:text-xl text-charcoal font-semibold leading-relaxed tracking-tight">
                         </h2>
                     </div>
                 </div>
@@ -463,7 +470,7 @@
                 qr1Alt: '服务号二维码',
                 qr2Alt: '问卷调查二维码',
                 outputs: {
-                    OUT_NOT_CRA: '您的产品不受CRA管辖。\n\n本法案仅针对特定范围内的带数字元素的产品。基于您的回答，您的产品可能未进入欧盟市场、属于特殊豁免品类或不具备数字/网络连接属性。\n建议您确保持续关注其他适用的欧盟法规（如MDR、车载等专属法规）。',
+                    OUT_NOT_CRA: '您的产品 不受CRA管辖。\n\n本法案仅针对特定范围内的带数字元素的产品。基于您的回答，您的产品可能未进入欧盟市场、属于特殊豁免品类或不具备数字/网络连接属性。\n建议您确保持续关注其他适用的欧盟法规（如MDR、车载等专属法规）。',
                     OUT_CRITICAL: '您的产品很可能属于《欧盟网络弹性法案》(CRA) 规定的 关键类 (Critical Category)。\n\n此类产品涉及国家或泛欧层面的关键基础设施安全。根据CRA要求，关键类产品须满足最严格的合规性要求，通常强制要求由欧盟公告机构 (Notified Body) 进行第三方认证，甚至可能需要获取欧洲网络安全证书。\n\nTÜV莱茵可为您提供深入的合规路径规划与严格的测试认证服务。',
                     OUT_CLASS2: '您的产品很可能属于《欧盟网络弹性法案》(CRA) 规定的 重要II类 (Important Class II)。\n\n此类产品通常是核心网络安全组件。根据法案要求，重要II类产品高度敏感，强制要求由欧盟公告机构 (Notified Body) 进行严格的第三方合格评定。\n\nTÜV莱茵作为专业的第三方检测认证机构，可助力您的产品顺利通过合规验证，安全进入欧盟市场。',
                     OUT_CLASS1: '您的产品很可能属于《欧盟网络弹性法案》(CRA) 规定的 重要I类 (Important Class I)。\n\n此类产品具有较高的网络安全风险。制造商除了需满足法案基本网络安全要求并建立漏洞处理机制外，通常还需要经过公告机构 (Notified Body) 的第三方合格评定（除非制造商能够完全适用并遵守特定的欧盟协调标准）。\n\n请联系 TÜV莱茵获取对应的技术文档审核与评估支持。',
@@ -474,90 +481,131 @@
                         step: 1,
                         q: '您的产品是否将会售于欧盟市场?',
                         options: [
-                            { text: '是，将会进入欧盟市场。', next: 'q2' },
-                            { text: '否。', output: 'OUT_NOT_CRA' }
+                            { text: '是', next: 'q2' },
+                            { text: '否', output: 'OUT_NOT_CRA' }
                         ]
                     },
                     'q2': {
                         step: 2,
                         q: '您的产品是否属于以下任何一类？',
                         options: [
-                            { text: '是，属于以下列表之一：<br><span class="text-xs text-charcoal/70 leading-normal block mt-1">• 医疗相关设备 (MDR 与 IVDR)<br>• 国防或国家安全相关设备<br>• Directive 2014/90/EU 下的船舶设备<br>• Regulation (EU) 2019/2144 下的车载设备<br>• 在EASA框架下认证的航空设备<br>• 原生SaaS<br>• 用作替换零件的产品</span>', output: 'OUT_NOT_CRA' },
-                            { text: '否，不属于以上的任何一类。', next: 'q3' }
+                            { text: '医疗相关设备 (MDR 与 IVDR)', output: 'OUT_NOT_CRA' },
+                            { text: '国防或国家安全相关设备', output: 'OUT_NOT_CRA' },
+                            { text: 'Directive 2014/90/EU 下的船舶设备', output: 'OUT_NOT_CRA' },
+                            { text: 'Regulation (EU) 2019/2144 下的车载设备', output: 'OUT_NOT_CRA' },
+                            { text: '在EASA框架下 (Regulation (EU) 2018/1139) 认证的航空设备', output: 'OUT_NOT_CRA' },
+                            { text: '原生 SaaS', output: 'OUT_NOT_CRA' },
+                            { text: '用作替换零件的产品', output: 'OUT_NOT_CRA' },
+                            { text: '不属于以上的任何一类', next: 'q3' }
                         ]
                     },
                     'q3': {
                         step: 3,
                         q: '您的产品是否有数字元素?<br><span class="text-sm text-charcoal/60">（例如有可编程芯片 / 有固件）</span>',
                         options: [
-                            { text: '是，包含数字元素。', next: 'q4' },
-                            { text: '否。', output: 'OUT_NOT_CRA' }
+                            { text: '是', next: 'q4' },
+                            { text: '否', output: 'OUT_NOT_CRA' }
                         ]
                     },
                     'q4': {
                         step: 4,
                         q: '您的产品是否具备与其他设备或网络进行数字数据连接的能力?<br><span class="text-sm text-charcoal/60">(例如: 有USB, WiFi等物理或无线通信接口)</span>',
                         options: [
-                            { text: '是，具备数据连接能力。', next: 'q5' },
-                            { text: '否。', output: 'OUT_NOT_CRA' }
+                            { text: '是', next: 'q5' },
+                            { text: '否', output: 'OUT_NOT_CRA' }
                         ]
                     },
                     'q5': {
                         step: 5,
                         q: '产品的预期用途是否属于以下任何一类?',
                         options: [
-                            { text: '是，属于以下列表之一：<br><span class="text-xs text-charcoal/70 leading-normal block mt-1">• 带安全盒的硬件设备<br>• 支付终端 / POS机 / 带付款功能的手环<br>• 生成/管理加密金钥的硬件安全模组HSM<br>• 用于商用车辆的数字行车记录器Tachograph<br>• 智能电表网关<br>• 智能卡 / SIM卡 / 嵌入式通用集成电路卡 / eSIM<br>• 可信平台模块TPM</span>', output: 'OUT_CRITICAL' },
-                            { text: '否，不属于以上的任何一类。', next: 'q6' }
+                            { text: '带安全盒的硬件设备', output: 'OUT_CRITICAL' },
+                            { text: '支付终端 / POS机 / 带付款功能的手环', output: 'OUT_CRITICAL' },
+                            { text: '生成/管理加密金钥的硬件安全模组 HSM', output: 'OUT_CRITICAL' },
+                            { text: '用于商用车辆的数字行车记录器 Tachograph', output: 'OUT_CRITICAL' },
+                            { text: '智能电表网关', output: 'OUT_CRITICAL' },
+                            { text: '智能卡 / SIM卡 / 嵌入式通用集成电路卡 / eSIM', output: 'OUT_CRITICAL' },
+                            { text: '可信平台模块 TPM', output: 'OUT_CRITICAL' },
+                            { text: '不属于以上的任何一类', next: 'q6' }
                         ]
                     },
                     'q6': {
                         step: 6,
                         q: '产品的预期用途是否属于以下任何一类?',
                         options: [
-                            { text: '是，属于以下列表之一：<br><span class="text-xs text-charcoal/70 leading-normal block mt-1">• 虚拟机管理器Hypervisor<br>• 容器运行时系统<br>• 防火墙<br>• 入侵检测系统IDS<br>• 入侵防御系统IPS<br>• 防篡改微处理器/微控制器</span>', output: 'OUT_CLASS2' },
-                            { text: '否，不属于以上的任何一类。', next: 'q7' }
+                            { text: '虚拟机管理器 Hypervisor', output: 'OUT_CLASS2' },
+                            { text: '容器运行时系统', output: 'OUT_CLASS2' },
+                            { text: '防火墙', output: 'OUT_CLASS2' },
+                            { text: '入侵检测系统 IDS', output: 'OUT_CLASS2' },
+                            { text: '入侵防御系统 IPS', output: 'OUT_CLASS2' },
+                            { text: '防篡改微处理器/微控制器', output: 'OUT_CLASS2' },
+                            { text: '不属于以上的任何一类', next: 'q7' }
                         ]
                     },
                     'q7': {
                         step: 7,
                         q: '产品的预期用途是否属于以下任何一类?',
                         options: [
-                            { text: '是，属于以下列表中的某一项：<br><span class="text-xs text-charcoal/70 leading-normal block mt-1">身份管理系统软硬件、特权访问管理设备、网路管理系统、SIEM 系统、公钥基础设施与证书签发软件、操作系统、独立/嵌入式浏览器、密码管理器、防恶意/防毒软件、启动管理器、VPN产品、物理与虚拟网络接口、路由器、调制解调器、交换器、无线存取点(AP)、具备安全功能的微处理器/微控制器、安全相关的ASIC/FPGA、智能家居通用虚拟助理、智能门锁、智能摄像头CCTV、智能婴儿监视器、警报器、其他保护家居安全的智能家居产品。</span>', output: 'OUT_CLASS1' },
-                            { text: '我的产品属于 <strong>玩具</strong>', next: 'q8' },
-                            { text: '我的产品属于 <strong>穿戴式设备</strong>', next: 'q10' },
-                            { text: '否，不属于以上的任何一类。', output: 'OUT_DEFAULT' }
+                            { text: '身份管理系统 (包括其软硬件)', output: 'OUT_CLASS1' },
+                            { text: '特权访问管理软硬件设备', output: 'OUT_CLASS1' },
+                            { text: '网路管理系统', output: 'OUT_CLASS1' },
+                            { text: 'SIEM 系统', output: 'OUT_CLASS1' },
+                            { text: '公钥基础设施与证书签发软件', output: 'OUT_CLASS1' },
+                            { text: '操作系统', output: 'OUT_CLASS1' },
+                            { text: '独立/嵌入式浏览器', output: 'OUT_CLASS1' },
+                            { text: '密码管理器', output: 'OUT_CLASS1' },
+                            { text: '防恶意/防毒软件', output: 'OUT_CLASS1' },
+                            { text: '启动管理器', output: 'OUT_CLASS1' },
+                            { text: 'VPN 产品', output: 'OUT_CLASS1' },
+                            { text: '物理与虚拟网络接口', output: 'OUT_CLASS1' },
+                            { text: '路由器', output: 'OUT_CLASS1' },
+                            { text: '调制解调器', output: 'OUT_CLASS1' },
+                            { text: '交换器', output: 'OUT_CLASS1' },
+                            { text: '无线存取点 Wireless AP', output: 'OUT_CLASS1' },
+                            { text: '具备安全相关功能的微处理器/微控制器', output: 'OUT_CLASS1' },
+                            { text: '安全相关的 ASIC / FPGA', output: 'OUT_CLASS1' },
+                            { text: '智能家居通用虚拟助理', output: 'OUT_CLASS1' },
+                            { text: '智能门锁', output: 'OUT_CLASS1' },
+                            { text: '智能摄像头 CCTV', output: 'OUT_CLASS1' },
+                            { text: '智能婴儿监视器', output: 'OUT_CLASS1' },
+                            { text: '警报器', output: 'OUT_CLASS1' },
+                            { text: '其他保护家居安全的智能家居产品', output: 'OUT_CLASS1' },
+                            { text: '玩具', next: 'q8' },
+                            { text: '穿戴式设备', next: 'q10' },
+                            { text: '不属于以上的任何一类', output: 'OUT_DEFAULT' }
                         ]
                     },
                     'q8': {
                         step: 8,
                         q: '您的玩具是否能够连线到互联网?',
                         options: [
-                            { text: '是。', next: 'q9' },
-                            { text: '否。', output: 'OUT_DEFAULT' }
+                            { text: '是', next: 'q9' },
+                            { text: '否', output: 'OUT_DEFAULT' }
                         ]
                     },
                     'q9': {
                         step: 9,
                         q: '您的玩具是否具备以下的功能?',
                         options: [
-                            { text: '具备 <strong>位置追踪功能</strong> 或 <strong>社交互动功能</strong> (例如透过对话、摄像头、文字进行双向互动)', output: 'OUT_CLASS1' },
-                            { text: '否，不具备以上的任何功能。', output: 'OUT_DEFAULT' }
+                            { text: '位置追踪功能', output: 'OUT_CLASS1' },
+                            { text: '社交互动功能 (例如透过对话、摄像头、文字进行双向互动)', output: 'OUT_CLASS1' },
+                            { text: '不具备以上的任何功能', output: 'OUT_DEFAULT' }
                         ]
                     },
                     'q10': {
                         step: 8, // branch step aligned for progress visual
-                        q: '您的穿戴设备是否具备健康监测功能(例如: 心跳、血压)?',
+                        q: '您的穿戴设备是否具备健康监测功能 (例如: 心跳、血压)?',
                         options: [
-                            { text: '是。', output: 'OUT_CLASS1' },
-                            { text: '否。', next: 'q11' }
+                            { text: '是', output: 'OUT_CLASS1' },
+                            { text: '否', next: 'q11' }
                         ]
                     },
                     'q11': {
                         step: 9,
                         q: '您的穿戴设备是否为14岁以下儿童而设?',
                         options: [
-                            { text: '是。', output: 'OUT_CLASS1' },
-                            { text: '否。', output: 'OUT_DEFAULT' }
+                            { text: '是', output: 'OUT_CLASS1' },
+                            { text: '否', output: 'OUT_DEFAULT' }
                         ]
                     }
                 }
@@ -573,7 +621,7 @@
                 welcomeTitle: 'EU CRA Classification Tool',
                 welcomeDesc: 'Welcome to the Cyber Resilience Act (CRA) Assessment Framework. This tool will help you preliminarily understand the risk classification and compliance requirements of your products with digital elements under the EU CRA.',
                 start: 'Start Assessment',
-                disclaimer: 'This determination is for reference only; this questionnaire does not take into account other design or technical details that may alter the classification of products .For a more detailed analysis, please contact TÜV Rheinland.',
+                disclaimer: 'This determination is for reference only; this questionnaire does not take into account other design or technical details that may alter the classification of product . For a more detailed analysis, please contact TÜV Rheinland.',
                 rights: 'All rights reserved.',
                 back: 'Go Back',
                 resultBadge: '[ Assessment Result ]',
@@ -605,90 +653,131 @@
                         step: 1,
                         q: 'Is your product intended to be sold on the EU market?',
                         options: [
-                            { text: 'Yes, it will enter the EU market.', next: 'q2' },
-                            { text: 'No.', output: 'OUT_NOT_CRA' }
+                            { text: 'Yes', next: 'q2' },
+                            { text: 'No', output: 'OUT_NOT_CRA' }
                         ]
                     },
                     'q2': {
                         step: 2,
                         q: 'Does your product fall into any of the following categories?',
                         options: [
-                            { text: 'Yes, it belongs to one of these:<br><span class="text-xs text-charcoal/70 leading-normal block mt-1">• Medical Devices (MDR/IVDR)<br>• Defense or National Security equipment<br>• Marine equipment (Dir 2014/90/EU)<br>• Motor vehicle equipment (Reg 2019/2144)<br>• Aviation equipment under EASA (Reg 2018/1139)<br>• Native SaaS<br>• Products used as replacement parts</span>', output: 'OUT_NOT_CRA' },
-                            { text: 'No, it does not belong to any of the above.', next: 'q3' }
+                            { text: 'Medical devices (MDR & IVDR)', output: 'OUT_NOT_CRA' },
+                            { text: 'Defense or national security equipment', output: 'OUT_NOT_CRA' },
+                            { text: 'Marine equipment (Dir 2014/90/EU)', output: 'OUT_NOT_CRA' },
+                            { text: 'Motor vehicle equipment (Reg 2019/2144)', output: 'OUT_NOT_CRA' },
+                            { text: 'Aviation equipment certified under EASA (Reg 2018/1139)', output: 'OUT_NOT_CRA' },
+                            { text: 'Native SaaS', output: 'OUT_NOT_CRA' },
+                            { text: 'Products used as replacement parts', output: 'OUT_NOT_CRA' },
+                            { text: 'None of the above', next: 'q3' }
                         ]
                     },
                     'q3': {
                         step: 3,
                         q: 'Does your product have digital elements?<br><span class="text-sm text-charcoal/60">(e.g., programmable chips / firmware)</span>',
                         options: [
-                            { text: 'Yes.', next: 'q4' },
-                            { text: 'No.', output: 'OUT_NOT_CRA' }
+                            { text: 'Yes', next: 'q4' },
+                            { text: 'No', output: 'OUT_NOT_CRA' }
                         ]
                     },
                     'q4': {
                         step: 4,
                         q: 'Does your product have the capability to connect with other devices or networks digitally?<br><span class="text-sm text-charcoal/60">(e.g., USB, WiFi, or other physical/wireless interfaces)</span>',
                         options: [
-                            { text: 'Yes.', next: 'q5' },
-                            { text: 'No.', output: 'OUT_NOT_CRA' }
+                            { text: 'Yes', next: 'q5' },
+                            { text: 'No', output: 'OUT_NOT_CRA' }
                         ]
                     },
                     'q5': {
                         step: 5,
                         q: 'Does the intended use of your product fall into any of the following categories?',
                         options: [
-                            { text: 'Yes, it belongs to one of these:<br><span class="text-xs text-charcoal/70 leading-normal block mt-1">• Hardware devices with security boxes<br>• Payment terminals / POS / Smartbands with payment<br>• Hardware Security Modules (HSM)<br>• Digital Tachographs for commercial vehicles<br>• Smart meter gateways<br>• Smart cards / SIMs / eSIMs<br>• Trusted Platform Modules (TPM)</span>', output: 'OUT_CRITICAL' },
-                            { text: 'No, it does not belong to any of the above.', next: 'q6' }
+                            { text: 'Hardware devices with security boxes', output: 'OUT_CRITICAL' },
+                            { text: 'Payment terminals / POS / Smartbands with payment', output: 'OUT_CRITICAL' },
+                            { text: 'Hardware Security Modules (HSM)', output: 'OUT_CRITICAL' },
+                            { text: 'Digital Tachographs for commercial vehicles', output: 'OUT_CRITICAL' },
+                            { text: 'Smart meter gateways', output: 'OUT_CRITICAL' },
+                            { text: 'Smart cards / SIMs / eSIMs', output: 'OUT_CRITICAL' },
+                            { text: 'Trusted Platform Modules (TPM)', output: 'OUT_CRITICAL' },
+                            { text: 'None of the above', next: 'q6' }
                         ]
                     },
                     'q6': {
                         step: 6,
                         q: 'Does the intended use of your product fall into any of the following categories?',
                         options: [
-                            { text: 'Yes, it belongs to one of these:<br><span class="text-xs text-charcoal/70 leading-normal block mt-1">• Hypervisors<br>• Container runtime systems<br>• Firewalls<br>• Intrusion Detection Systems (IDS)<br>• Intrusion Prevention Systems (IPS)<br>• Tamper-resistant microprocessors</span>', output: 'OUT_CLASS2' },
-                            { text: 'No, it does not belong to any of the above.', next: 'q7' }
+                            { text: 'Hypervisors', output: 'OUT_CLASS2' },
+                            { text: 'Container runtime systems', output: 'OUT_CLASS2' },
+                            { text: 'Firewalls', output: 'OUT_CLASS2' },
+                            { text: 'Intrusion Detection Systems (IDS)', output: 'OUT_CLASS2' },
+                            { text: 'Intrusion Prevention Systems (IPS)', output: 'OUT_CLASS2' },
+                            { text: 'Tamper-resistant microprocessors/microcontrollers', output: 'OUT_CLASS2' },
+                            { text: 'None of the above', next: 'q7' }
                         ]
                     },
                     'q7': {
                         step: 7,
                         q: 'Does the intended use of your product fall into any of the following categories?',
                         options: [
-                            { text: 'Yes, it is one of the following:<br><span class="text-xs text-charcoal/70 leading-normal block mt-1">Identity mgmt, Privileged access mgmt, Network mgmt, SIEM, PKI, OS, Browsers, Password managers, Antivirus, Boot managers, VPN, Network interfaces, Routers, Modems, Switches, Wireless AP, Microcontrollers with security, Security ASIC/FPGA, Smart home assistants, Smart door locks, Smart CCTV, Smart baby monitors, Alarm systems, Other smart home security.</span>', output: 'OUT_CLASS1' },
-                            { text: 'My product is a <strong>Toy</strong>', next: 'q8' },
-                            { text: 'My product is a <strong>Wearable device</strong>', next: 'q10' },
-                            { text: 'No, it does not belong to any of the above.', output: 'OUT_DEFAULT' }
+                            { text: 'Identity management systems (including hardware/software)', output: 'OUT_CLASS1' },
+                            { text: 'Privileged access management equipment', output: 'OUT_CLASS1' },
+                            { text: 'Network management systems', output: 'OUT_CLASS1' },
+                            { text: 'SIEM systems', output: 'OUT_CLASS1' },
+                            { text: 'PKI & certificate issuance software', output: 'OUT_CLASS1' },
+                            { text: 'Operating systems', output: 'OUT_CLASS1' },
+                            { text: 'Standalone/embedded browsers', output: 'OUT_CLASS1' },
+                            { text: 'Password managers', output: 'OUT_CLASS1' },
+                            { text: 'Antivirus software', output: 'OUT_CLASS1' },
+                            { text: 'Boot managers', output: 'OUT_CLASS1' },
+                            { text: 'VPN products', output: 'OUT_CLASS1' },
+                            { text: 'Physical and virtual network interfaces', output: 'OUT_CLASS1' },
+                            { text: 'Routers', output: 'OUT_CLASS1' },
+                            { text: 'Modems', output: 'OUT_CLASS1' },
+                            { text: 'Switches', output: 'OUT_CLASS1' },
+                            { text: 'Wireless Access Points (APs)', output: 'OUT_CLASS1' },
+                            { text: 'Microprocessors/microcontrollers with security functions', output: 'OUT_CLASS1' },
+                            { text: 'Security-related ASIC/FPGA', output: 'OUT_CLASS1' },
+                            { text: 'Smart home virtual assistants', output: 'OUT_CLASS1' },
+                            { text: 'Smart door locks', output: 'OUT_CLASS1' },
+                            { text: 'Smart CCTV', output: 'OUT_CLASS1' },
+                            { text: 'Smart baby monitors', output: 'OUT_CLASS1' },
+                            { text: 'Alarm systems', output: 'OUT_CLASS1' },
+                            { text: 'Other smart home security products', output: 'OUT_CLASS1' },
+                            { text: 'Toys', next: 'q8' },
+                            { text: 'Wearable devices', next: 'q10' },
+                            { text: 'None of the above', output: 'OUT_DEFAULT' }
                         ]
                     },
                     'q8': {
                         step: 8,
                         q: 'Can your toy connect to the Internet?',
                         options: [
-                            { text: 'Yes.', next: 'q9' },
-                            { text: 'No.', output: 'OUT_DEFAULT' }
+                            { text: 'Yes', next: 'q9' },
+                            { text: 'No', output: 'OUT_DEFAULT' }
                         ]
                     },
                     'q9': {
                         step: 9,
                         q: 'Does your toy have any of the following functions?',
                         options: [
-                            { text: 'It has <strong>Location tracking</strong> OR <strong>Social interaction</strong> (e.g., two-way interaction via voice/camera/text)', output: 'OUT_CLASS1' },
-                            { text: 'No, it does not have these functions.', output: 'OUT_DEFAULT' }
+                            { text: 'Location tracking function', output: 'OUT_CLASS1' },
+                            { text: 'Social interaction function (e.g., two-way interaction via voice/camera/text)', output: 'OUT_CLASS1' },
+                            { text: 'Does not have any of these functions', output: 'OUT_DEFAULT' }
                         ]
                     },
                     'q10': {
                         step: 8,
                         q: 'Does your wearable device have health monitoring functions (e.g., heart rate, blood pressure)?',
                         options: [
-                            { text: 'Yes.', output: 'OUT_CLASS1' },
-                            { text: 'No.', next: 'q11' }
+                            { text: 'Yes', output: 'OUT_CLASS1' },
+                            { text: 'No', next: 'q11' }
                         ]
                     },
                     'q11': {
                         step: 9,
                         q: 'Is your wearable device designed for children under 14 years old?',
                         options: [
-                            { text: 'Yes.', output: 'OUT_CLASS1' },
-                            { text: 'No.', output: 'OUT_DEFAULT' }
+                            { text: 'Yes', output: 'OUT_CLASS1' },
+                            { text: 'No', output: 'OUT_DEFAULT' }
                         ]
                     }
                 }
@@ -807,11 +896,12 @@
 
             node.options.forEach((opt) => {
                 const btn = document.createElement('button');
-                btn.className = 'spotlight-card px-4 md:px-5 py-3 md:py-4 cursor-pointer focus:outline-none text-left flex items-center group shrink-0 transition-all';
+                // Decreased py-padding and text sizes slightly to perfectly accommodate long lists gracefully
+                btn.className = 'spotlight-card px-4 md:px-5 py-2.5 md:py-3 cursor-pointer focus:outline-none text-left flex items-center group shrink-0 transition-all';
                 btn.innerHTML = `
                     <span class="bracket left hidden md:inline-block">[</span>
-                    <span class="font-sans text-[13px] md:text-[15px] text-charcoal z-10 w-full pr-6">${opt.text}</span>
-                    <div class="absolute right-3 md:right-4 w-5 h-5 shrink-0 border border-tuvBlue/30 flex items-center justify-center text-tuvBlue opacity-0 group-[.active-selected]:opacity-100 md:group-hover:opacity-100 transition-opacity z-10 bg-white">
+                    <span class="font-sans text-[12px] md:text-[14px] text-charcoal z-10 w-full pr-6">${opt.text}</span>
+                    <div class="absolute right-3 md:right-4 w-4 h-4 md:w-5 md:h-5 shrink-0 border border-tuvBlue/30 flex items-center justify-center text-tuvBlue opacity-0 group-[.active-selected]:opacity-100 md:group-hover:opacity-100 transition-opacity z-10 bg-white">
                         <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg>
                     </div>
                     <span class="bracket right hidden md:inline-block">]</span>
@@ -827,7 +917,7 @@
             greetingView.style.display = 'none';
             resultView.style.display = 'none';
             consoleContainer.style.display = 'flex';
-            gsap.fromTo(optionsContainer.children, { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.4, stagger: 0.05, ease: 'power2.out' });
+            gsap.fromTo(optionsContainer.children, { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.4, stagger: 0.03, ease: 'power2.out' });
         }
 
         function proceedToNext(opt) {
