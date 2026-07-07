@@ -651,7 +651,7 @@
                 nodes: {
                     'q1': {
                         step: 1,
-                        q: 'Is your product intended to be sold on the EU market?',
+                        q: 'Will your products be sold in the EU market/ to EU entities?',
                         options: [
                             { text: 'Yes', next: 'q2' },
                             { text: 'No', output: 'OUT_NOT_CRA' }
@@ -661,19 +661,19 @@
                         step: 2,
                         q: 'Does your product fall into any of the following categories?',
                         options: [
-                            { text: 'Medical devices (MDR & IVDR)', output: 'OUT_NOT_CRA' },
-                            { text: 'Defense or national security equipment', output: 'OUT_NOT_CRA' },
-                            { text: 'Marine equipment (Dir 2014/90/EU)', output: 'OUT_NOT_CRA' },
-                            { text: 'Motor vehicle equipment (Reg 2019/2144)', output: 'OUT_NOT_CRA' },
-                            { text: 'Aviation equipment certified under EASA (Reg 2018/1139)', output: 'OUT_NOT_CRA' },
+                            { text: 'Medical-related equipment MDR and IVDR', output: 'OUT_NOT_CRA' },
+                            { text: 'Defense or national security related equipment', output: 'OUT_NOT_CRA' },
+                            { text: 'Marine equipment under Directive 2014/90/EU', output: 'OUT_NOT_CRA' },
+                            { text: 'Vehicle equipment under Regulation (EU) 2019/2144', output: 'OUT_NOT_CRA' },
+                            { text: 'Aviation equipment certified under the EASA framework (Regulation (EU) 2018/1139)', output: 'OUT_NOT_CRA' },
                             { text: 'Native SaaS', output: 'OUT_NOT_CRA' },
                             { text: 'Products used as replacement parts', output: 'OUT_NOT_CRA' },
-                            { text: 'None of the above', next: 'q3' }
+                            { text: 'Not belonging to any of the above categories', next: 'q3' }
                         ]
                     },
                     'q3': {
                         step: 3,
-                        q: 'Does your product have digital elements?<br><span class="text-sm text-charcoal/60">(e.g., programmable chips / firmware)</span>',
+                        q: 'Does your product contain digital elements?',
                         options: [
                             { text: 'Yes', next: 'q4' },
                             { text: 'No', output: 'OUT_NOT_CRA' }
@@ -681,7 +681,7 @@
                     },
                     'q4': {
                         step: 4,
-                        q: 'Does your product have the capability to connect with other devices or networks digitally?<br><span class="text-sm text-charcoal/60">(e.g., USB, WiFi, or other physical/wireless interfaces)</span>',
+                        q: 'Does your product have the capability to connect digitally to other devices or networks? (Analog connections are not included.)',
                         options: [
                             { text: 'Yes', next: 'q5' },
                             { text: 'No', output: 'OUT_NOT_CRA' }
@@ -689,67 +689,69 @@
                     },
                     'q5': {
                         step: 5,
-                        q: 'Does the intended use of your product fall into any of the following categories?',
+                        q: 'Does the product fall into any of the following categories for its intended use?',
                         options: [
-                            { text: 'Hardware devices with security boxes', output: 'OUT_CRITICAL' },
-                            { text: 'Payment terminals / POS / Smartbands with payment', output: 'OUT_CRITICAL' },
-                            { text: 'Hardware Security Modules (HSM)', output: 'OUT_CRITICAL' },
-                            { text: 'Digital Tachographs for commercial vehicles', output: 'OUT_CRITICAL' },
-                            { text: 'Smart meter gateways', output: 'OUT_CRITICAL' },
-                            { text: 'Smart cards / SIMs / eSIMs', output: 'OUT_CRITICAL' },
-                            { text: 'Trusted Platform Modules (TPM)', output: 'OUT_CRITICAL' },
-                            { text: 'None of the above', next: 'q6' }
+                            { text: 'Hardware device with security box', output: 'OUT_CRITICAL' },
+                            { text: 'Physical Payment terminal/POS machine', output: 'OUT_CRITICAL' },
+                            { text: 'Hardware security module (HSM) for generating/managing encryption keys', output: 'OUT_CRITICAL' },
+                            { text: 'Tachograph digital dashcam for commercial vehicles', output: 'OUT_CRITICAL' },
+                            { text: 'Smart meter gateway', output: 'OUT_CRITICAL' },
+                            { text: 'Smart card/SIM card', output: 'OUT_CRITICAL' },
+                            { text: 'Trusted platform module (TPM)', output: 'OUT_CRITICAL' },
+                            { text: 'Embedded universal integrated circuit card/ eSIM', output: 'OUT_CRITICAL' },
+                            { text: 'Wristband with payment functions', output: 'OUT_CRITICAL' },
+                            { text: 'Not belonging to any of the above categories', next: 'q6' }
                         ]
                     },
                     'q6': {
                         step: 6,
-                        q: 'Does the intended use of your product fall into any of the following categories?',
+                        q: 'Does the product fall into any of the following categories for its intended use?',
                         options: [
-                            { text: 'Hypervisors', output: 'OUT_CLASS2' },
-                            { text: 'Container runtime systems', output: 'OUT_CLASS2' },
-                            { text: 'Firewalls', output: 'OUT_CLASS2' },
-                            { text: 'Intrusion Detection Systems (IDS)', output: 'OUT_CLASS2' },
-                            { text: 'Intrusion Prevention Systems (IPS)', output: 'OUT_CLASS2' },
-                            { text: 'Tamper-resistant microprocessors/microcontrollers', output: 'OUT_CLASS2' },
-                            { text: 'None of the above', next: 'q7' }
+                            { text: 'Hypervisor', output: 'OUT_CLASS2' },
+                            { text: 'Container Runtime System', output: 'OUT_CLASS2' },
+                            { text: 'Firewall', output: 'OUT_CLASS2' },
+                            { text: 'Intrusion Detection System (IDS)', output: 'OUT_CLASS2' },
+                            { text: 'Intrusion Prevention System (IPS)', output: 'OUT_CLASS2' },
+                            { text: 'Tamper-resistant Microprocessor/Microcontroller', output: 'OUT_CLASS2' },
+                            { text: 'Not belonging to any of the above categories', next: 'q7' }
                         ]
                     },
                     'q7': {
                         step: 7,
-                        q: 'Does the intended use of your product fall into any of the following categories?',
+                        q: 'Does the product fall into any of the following categories for its intended use?',
                         options: [
-                            { text: 'Identity management systems (including hardware/software)', output: 'OUT_CLASS1' },
-                            { text: 'Privileged access management equipment', output: 'OUT_CLASS1' },
-                            { text: 'Network management systems', output: 'OUT_CLASS1' },
-                            { text: 'SIEM systems', output: 'OUT_CLASS1' },
-                            { text: 'PKI & certificate issuance software', output: 'OUT_CLASS1' },
-                            { text: 'Operating systems', output: 'OUT_CLASS1' },
-                            { text: 'Standalone/embedded browsers', output: 'OUT_CLASS1' },
-                            { text: 'Password managers', output: 'OUT_CLASS1' },
-                            { text: 'Antivirus software', output: 'OUT_CLASS1' },
-                            { text: 'Boot managers', output: 'OUT_CLASS1' },
-                            { text: 'VPN products', output: 'OUT_CLASS1' },
-                            { text: 'Physical and virtual network interfaces', output: 'OUT_CLASS1' },
-                            { text: 'Routers', output: 'OUT_CLASS1' },
-                            { text: 'Modems', output: 'OUT_CLASS1' },
-                            { text: 'Switches', output: 'OUT_CLASS1' },
-                            { text: 'Wireless Access Points (APs)', output: 'OUT_CLASS1' },
-                            { text: 'Microprocessors/microcontrollers with security functions', output: 'OUT_CLASS1' },
-                            { text: 'Security-related ASIC/FPGA', output: 'OUT_CLASS1' },
-                            { text: 'Smart home virtual assistants', output: 'OUT_CLASS1' },
-                            { text: 'Smart door locks', output: 'OUT_CLASS1' },
-                            { text: 'Smart CCTV', output: 'OUT_CLASS1' },
-                            { text: 'Smart baby monitors', output: 'OUT_CLASS1' },
-                            { text: 'Alarm systems', output: 'OUT_CLASS1' },
-                            { text: 'Other smart home security products', output: 'OUT_CLASS1' },
-                            { text: 'Toys', next: 'q8' },
+                            { text: 'Identity Management System including its hardware and software', output: 'OUT_CLASS1' },
+                            { text: 'Privileged Access Management System including its hardware and software', output: 'OUT_CLASS1' },
+                            { text: 'Standalone/Embedded Browser', output: 'OUT_CLASS1' },
+                            { text: 'Password Manager', output: 'OUT_CLASS1' },
+                            { text: 'Anti-malware', output: 'OUT_CLASS1' },
+                            { text: 'VPN Product', output: 'OUT_CLASS1' },
+                            { text: 'Network Management System', output: 'OUT_CLASS1' },
+                            { text: 'SIEM System', output: 'OUT_CLASS1' },
+                            { text: 'Boot Manager', output: 'OUT_CLASS1' },
+                            { text: 'PKI and Digital Credential Issuance Software', output: 'OUT_CLASS1' },
+                            { text: 'Physical/Virtual Network Interface', output: 'OUT_CLASS1' },
+                            { text: 'Operating System', output: 'OUT_CLASS1' },
+                            { text: 'Router', output: 'OUT_CLASS1' },
+                            { text: 'Modem Used for Internet Connection', output: 'OUT_CLASS1' },
+                            { text: 'Switch', output: 'OUT_CLASS1' },
+                            { text: 'Wireless Access Point (AP)', output: 'OUT_CLASS1' },
+                            { text: 'Microprocessor/Microcontroller with Security-Related Functions', output: 'OUT_CLASS1' },
+                            { text: 'Security-Related ASIC/FPGA', output: 'OUT_CLASS1' },
+                            { text: 'General Virtual Assistant for Smart Homes', output: 'OUT_CLASS1' },
+                            { text: 'Smart Door Lock', output: 'OUT_CLASS1' },
+                            { text: 'Smart CCTV Camera', output: 'OUT_CLASS1' },
+                            { text: 'Smart Baby Monitor', output: 'OUT_CLASS1' },
+                            { text: 'Alarm', output: 'OUT_CLASS1' },
+                            { text: 'Other Smart Products for Home Security', output: 'OUT_CLASS1' },
+                            { text: 'Toy', next: 'q8' },
                             { text: 'Wearable devices', next: 'q10' },
-                            { text: 'None of the above', output: 'OUT_DEFAULT' }
+                            { text: 'Not belonging to any of the above categories', output: 'OUT_DEFAULT' }
                         ]
                     },
                     'q8': {
                         step: 8,
-                        q: 'Can your toy connect to the Internet?',
+                        q: 'Can your toy connect to the internet?',
                         options: [
                             { text: 'Yes', next: 'q9' },
                             { text: 'No', output: 'OUT_DEFAULT' }
@@ -757,11 +759,11 @@
                     },
                     'q9': {
                         step: 9,
-                        q: 'Does your toy have any of the following functions?',
+                        q: 'Does your toy have the following functions?',
                         options: [
-                            { text: 'Location tracking function', output: 'OUT_CLASS1' },
-                            { text: 'Social interaction function (e.g., two-way interaction via voice/camera/text)', output: 'OUT_CLASS1' },
-                            { text: 'Does not have any of these functions', output: 'OUT_DEFAULT' }
+                            { text: 'Location tracking', output: 'OUT_CLASS1' },
+                            { text: 'Social interaction features (such as two-way interaction via chat, camera, and text)', output: 'OUT_CLASS1' },
+                            { text: 'Not belonging to any of the above categories', output: 'OUT_DEFAULT' }
                         ]
                     },
                     'q10': {
